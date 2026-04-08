@@ -1,4 +1,4 @@
-﻿#include "Server.h"
+#include "Server.h"
 #include <openssl/evp.h>    // EVP_CIPHER_CTX, EVP_EncryptInit_ex и т.д.
 #include <openssl/rand.h>   // RAND_bytes
 void Server::run() {
@@ -7,16 +7,33 @@ void Server::run() {
 	cout << "Ожидание подключения" << endl;
 	tcp::acceptor acceptor(socket.get_executor(), tcp::endpoint(tcp::v4(), port_));
 	acceptor.accept(socket.next_layer());
+
+
 	cout << "Подключено" << endl;
 	UInt256 otherPublicKey;
 	net::read(socket.next_layer(), net::buffer(otherPublicKey.key, 32));
 	
 	net::write(socket.next_layer(), net::buffer(publicKey.key, 32));
 
-
 	UInt256 secret = ScalarMult(privateKey, otherPublicKey);
+
+	cout << (string)privateKey << " [Приватный ключ сервера]" << endl;
+	cout << "*" << endl;
+	cout << (string)UInt256::basePoint() <<" [Базовая точка]" << endl;
+	for (int i = 0; i < 2 * 32 + 32; ++i) cout << "-";
+	cout << endl;
+	cout << (string)publicKey <<" [ Публичный ключ сервера ---> Клиент ]" << endl;
+	cout << endl;
+
+
+	cout << (string)privateKey << " [Приватный ключ сервера]" << endl;
+	cout << "*"<<endl;
+	cout << (string)otherPublicKey << " [ Сервер <--- Публичный ключ клиента ]"<<endl;
+	for (int i = 0; i < 2 * 32 + 32; ++i) cout << "-";
+	cout << endl;
+	cout << (string)secret <<" [Общий серкрет]" << endl;
+
 	memcpy(secret_, secret.key, 32);
-	cout << "Secret:\t" << (string)secret << endl;
 	socket.binary(true);
 	socket.accept();
 	on_read();
@@ -36,7 +53,7 @@ void Server::on_read()
 				);
 				vector<uint8_t> rawBytes = self->decrypt(bytes);
 				string text = string(rawBytes.begin(), rawBytes.end());
-				cout << text << endl;
+				cout <<"[Сервер <--- Клиент] " << text << endl;
 				self->buffer_.consume(self->buffer_.size());
 				self->on_read();     // автоматически перезапускаем
 			}

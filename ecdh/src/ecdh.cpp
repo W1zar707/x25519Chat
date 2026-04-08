@@ -42,7 +42,8 @@ UInt256 ScalarMult(UInt256& scalar, const UInt256& point) {
 
         Fe25519 DA = D * A;
         Fe25519 CB = C * B;
-
+        
+     
         // Обновление R1 (сложение)
         x3 = (DA + CB).square();
         z3 = (DA - CB).square() * x1;

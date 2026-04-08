@@ -1,13 +1,13 @@
-﻿#include "Client.h"
+#include "Client.h"
 #include <string>
 #include <thread>
 #include <locale.h>
 using namespace std;
 int main() {
-    setlocale(LC_ALL, "RU");
     SetConsoleOutputCP(CP_UTF8);  // вывод в UTF-8
     SetConsoleCP(CP_UTF8);        // ввод в UTF-8
     net::io_context ioc;
+    cout << "Клиент" << endl;
     cout << "Введите ip хоста" << endl;
     string host;
     getline(cin, host);
@@ -24,4 +24,5 @@ int main() {
     }
 
     t.join();
+    return 0;
 }
